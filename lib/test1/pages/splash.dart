@@ -1,12 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
+  @override
+
+    // Set status bar color and icon brightness
+
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent, // makes it blend with background
+        statusBarIconBrightness: Brightness.light, // white icons for dark background
+        statusBarBrightness: Brightness.dark, // for iOS
+      ),
+    );
     return Scaffold(
       backgroundColor: Colors.black,
       body: Center(
@@ -16,13 +27,26 @@ class SplashScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               // Icon
-              Icon(
-                Icons.edit_note,
-                size: 100,
-                color: Colors.blue,
+              Container(
+                width: 120,
+                height: 120,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.blue.withOpacity(.4),
+                  border: Border.all(color: Colors.blue, width: 3),
+                ),
+
+                child:FittedBox(
+
+                  child: Image.asset(
+                    'assets/img/edit.png',
+                    height: 50,
+                    width: 30,
+                  ),
+                ),
               ),
 
-              const SizedBox(height: 30),
+              // const SizedBox(height: 30),
 
               // Main Title
               Text(
