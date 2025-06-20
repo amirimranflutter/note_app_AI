@@ -1,9 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:note_test_soban/test1/Auth/login.dart';
+import 'package:note_test_soban/firebase_options.dart';
+import 'package:note_test_soban/test1/pages/noteScreen.dart';
+import 'package:note_test_soban/test1/pages/profile.dart';
+import 'package:note_test_soban/test1/pages/signUp.dart';
+import 'package:firebase_core/firebase_core.dart';
 
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
 
-void main() {
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const MyApp());
 }
 
@@ -27,7 +35,7 @@ class MyApp extends StatelessWidget {
     foregroundColor: Colors.white,
     iconTheme: IconThemeData(color: Colors.white),
     ),),
-      home: const LoginPage(),
+      home: NotesScreen(),
     );
   }
 }
