@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "904617758833",
+    "project_id": "test1-1b232",
+    "storage_bucket": "test1-1b232.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:904617758833:android:782989464c73aa66d14bd0",
+        "android_client_info": {
+          "package_name": "com.bvoir.testNotesoban"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAVJhBBOm-MJ5Cf69Fcdtq9Yg5hxJ4Ctwk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
