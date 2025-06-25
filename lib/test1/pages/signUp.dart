@@ -1,7 +1,11 @@
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:note_test_soban/test1/Auth/service_Auth.dart';
 import 'package:note_test_soban/test1/Dry/globelfile.dart';
+import 'package:note_test_soban/test1/Dry/img_picker_dialog.dart';
 import 'package:note_test_soban/test1/pages/noteScreen.dart';
 
 import '../Dry/custom button.dart';
@@ -15,12 +19,28 @@ class SignUpPage extends StatefulWidget {
 }
 
 class _SignUpPageState extends State<SignUpPage> {
+  File? _selectedImg;
+  String? _enteredImgUrl;
+
   // Controllers
   final TextEditingController fullNameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
   bool isLoading = false;
+
+  void showImagePickerDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => Imag_Picker_Dialog(
+        onImageSelected: (String? url) {
+          setState(() {
+            _enteredImgUrl = url;
+          });
+        },
+      ),
+    );
+  }
 
   @override
   void dispose() {
@@ -32,6 +52,7 @@ class _SignUpPageState extends State<SignUpPage> {
     super.dispose();
   }
 
+  @override
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,9 +73,46 @@ class _SignUpPageState extends State<SignUpPage> {
               const SizedBox(height: 50),
 
               // 👤 Account Icon
-              const Icon(Icons.person_add, size: 80, color: Colors.white),
+              Stack(
+                children:[ Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(width: 3,color: Colors.white),
+                    shape: BoxShape.circle
+                  ),
+                  child: CircleAvatar(
+                    radius: 60,
+                    backgroundImage: _selectedImg != null
+                        ? FileImage(_selectedImg!)
+                        : _enteredImgUrl != null
+                        ? NetworkImage(_enteredImgUrl!)
+                        : null,
+                    child: _selectedImg == null && _enteredImgUrl == null
+                        ? Icon(Icons.person_add, size: 40, color: Colors.white)
+                        : null,
+                  ),
+                ),
+                Positioned(bottom: 9,right: 9
+                    ,child: GestureDetector(
+                      onTap: showImagePickerDialog,
+                      child: Container(
+                        
+                          decoration: BoxDecoration(
+                            color: Colors.purple.withOpacity(.7),
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.white,strokeAlign: BorderSide.strokeAlignOutside,width: 2)
+                          ),
+                          child:Padding(padding: EdgeInsets.all(4),child: Icon(CupertinoIcons.camera,size: 16,))) ,
+                    ))
+                ]
+              ),
 
-              const SizedBox(height: 24),
+              // IconButton(
+              //   icon: Icon(Icons.person_add, size: 80, color: Colors.white),
+              //   onPressed: () {
+              //     showImagePickerDialog();
+              //   },
+              // ),
+              SizedBox(height: 24),
 
               // Title
               Text(
@@ -124,23 +182,28 @@ class _SignUpPageState extends State<SignUpPage> {
                         setState(() {
                           isLoading = true;
                         });
+                        String? imagPathorUrl;
+
                         FocusScope.of(context).unfocus();
-                        bool issuccess=await ServiceAuth.SignUp(
-                          name: fullNameController.text,
+                       if(_enteredImgUrl!=null&&_enteredImgUrl!.isNotEmpty){
+                          imagPathorUrl=_enteredImgUrl;
+                        }
+                        bool issuccess = await ServiceAuth.SignUp(name: fullNameController.text,
                           email: emailController.text,
                           password: passwordController.text,
                           phone: phoneController.text,
                           context: context,
+                          picUrl: imagPathorUrl!,
                         );
                         setState(() {
                           isLoading = false;
                         });
-                        Future.delayed(Duration.zero, () {
+                        if(issuccess) {
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(builder: (_) => NotesScreen()),
                           );
-                        });
+                        };
                       },
                     ),
 
