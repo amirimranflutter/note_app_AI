@@ -1,12 +1,11 @@
-import 'dart:developer';
+
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:note_test_soban/test1/Auth/api.dart';
 import 'package:note_test_soban/test1/Auth/service_Auth.dart';
-import 'package:note_test_soban/test1/pages/profile.dart';
-import 'package:note_test_soban/test1/pages/signUp.dart';
+
 
 class NotesScreen extends StatefulWidget {
   const NotesScreen({super.key});
@@ -141,8 +140,6 @@ class _NotesScreenState extends State<NotesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print("📌 Current user count: ${user.length}");
-    print("📌 Selected user widget: $selectedUser");
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -153,63 +150,56 @@ class _NotesScreenState extends State<NotesScreen> {
           actions: [
             Padding(
               padding: const EdgeInsets.only(right: 12),
-              child: DropdownButtonHideUnderline(
-                child: DropdownButton<Map<String, dynamic>>(
-                  dropdownColor: Colors.white,
-                  icon: selectedUser != null
-                      ? CircleAvatar(
-                    radius: 18,
-                    backgroundImage: selectedUser!['photoUrl'] != null
-                        ? NetworkImage(selectedUser!['photoUrl'])
-                        : null,
-                    child: selectedUser!['photoUrl'] == null
-                        ? Icon(Icons.person, size: 18)
-                        : null,
-                  )
-                      : Icon(Icons.account_circle, color: Colors.white),
-
-                  // Map user list to dropdown items
-                  items: user.map<DropdownMenuItem<Map<String, dynamic>>>((userData) {
-                    return DropdownMenuItem<Map<String, dynamic>>(
-
-                      value: userData,
-                      child: Row(
-                        children: [
-
-                          CircleAvatar(
-                            radius: 12,
-                            backgroundImage: userData['photoUrl'] != null
-                                ? NetworkImage(userData['photoUrl'])
-                                : null,
-                            child: userData['photoUrl'] == null
-                                ? Icon(Icons.person, size: 12)
-                                : null,
-                          ),
-                          SizedBox(width: 8),
-                          Text(
+              child: PopupMenuButton<Map<String, dynamic>>(
+                tooltip: 'Select account',
+                onSelected: (value) {
+                  print("✅ Selected user: $value");
+                  setState(() {
+                    selectedUser = value;
+                  });
+                },
+                itemBuilder: (context) => user.map((userData) {
+                  return PopupMenuItem<Map<String, dynamic>>(
+                    value: userData,
+                    child: Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 14,
+                          backgroundImage: userData['urlImage'] != null
+                              ? NetworkImage(userData['urlImage'])
+                              : null,
+                          child: userData['urlImage'] == null
+                              ? const Icon(Icons.person, size: 14)
+                              : null,
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
                             userData['email'],
-                            style: TextStyle(fontSize: 14,color: Colors.black),
+                            style: const TextStyle(fontSize: 14),
+                            overflow: TextOverflow.ellipsis,
                           ),
-                        ],
-                      ),
-                    );
-                  }).toList(),
-
-                  onChanged: (value) {
-
-                    print("🔁 Selected user: $value");
-                    setState(() {
-                      selectedUser = value;
-                      // Optional: Load notes for selectedUser here
-                    });
-                  },
-
-                  value: selectedUser,
-                ),
+                        ),
+                      ],
+                    ),
+                  );
+                }).toList(),
+                child: selectedUser != null
+                    ? CircleAvatar(
+                  radius: 18,
+                  backgroundImage: selectedUser!['urlImage'] != null
+                      ? NetworkImage(selectedUser!['urlImage'])
+                      : null,
+                  child: selectedUser!['urlImage'] == null
+                      ? const Icon(Icons.person, size: 18)
+                      : null,
+                )
+                    : const Icon(Icons.account_circle, color: Colors.white),
               ),
-            )
+            ),
 
-        ],
+
+          ],
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: _firestore
@@ -282,8 +272,8 @@ class _NotesScreenState extends State<NotesScreen> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        // onPressed: _showAddNoteBottomSheet,
-        onPressed:()=>Navigator.push(context,MaterialPageRoute(builder: (context)=>SignUpPage())),
+        onPressed: _showAddNoteBottomSheet,
+        // onPressed:()=>Navigator.push(context,MaterialPageRoute(builder: (context)=>SignUpPage())),
         child: const Icon(Icons.add),
       ),
     );
