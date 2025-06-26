@@ -8,7 +8,8 @@ import 'package:note_test_soban/test1/Auth/service_Auth.dart';
 
 
 class NotesScreen extends StatefulWidget {
-  const NotesScreen({super.key});
+  final Map<String,dynamic> userData;
+   NotesScreen({super.key,required this.userData});
 
   @override
   State<NotesScreen> createState() => _NotesScreenState();
@@ -31,7 +32,7 @@ class _NotesScreenState extends State<NotesScreen> {
 
   //all about load user funtion that using in dropdown button to fetch user data
   List user = [];
-  Map<String, dynamic>? selectedUser;
+  late Map<String, dynamic> selectedUser;
 
   // Show bottom sheet for adding new note
   Future<void> userPic() async {
@@ -44,6 +45,7 @@ class _NotesScreenState extends State<NotesScreen> {
     super.initState();
     userPic();
     loadUser();
+    selectedUser=widget.userData;
 
   }
 
@@ -123,6 +125,7 @@ class _NotesScreenState extends State<NotesScreen> {
                       context: context,
                       title: _titleController.text,
                       description: _descriptionController.text,
+                      selectedUser: selectedUser
                     );
                   },
                   child: const Text('Add Notes'),
@@ -187,10 +190,10 @@ class _NotesScreenState extends State<NotesScreen> {
                 child: selectedUser != null
                     ? CircleAvatar(
                   radius: 18,
-                  backgroundImage: selectedUser!['urlImage'] != null
-                      ? NetworkImage(selectedUser!['urlImage'])
+                  backgroundImage: selectedUser['urlImage'] != null
+                      ? NetworkImage(selectedUser['urlImage'])
                       : null,
-                  child: selectedUser!['urlImage'] == null
+                  child: selectedUser['urlImage'] == null
                       ? const Icon(Icons.person, size: 18)
                       : null,
                 )
@@ -204,7 +207,7 @@ class _NotesScreenState extends State<NotesScreen> {
       body: StreamBuilder<QuerySnapshot>(
         stream: _firestore
             .collection('user')
-            .doc(Api.user.uid)
+            .doc(selectedUser['uid'])
             .collection('note')
             .orderBy('timestamp', descending: true)
             .snapshots(),
